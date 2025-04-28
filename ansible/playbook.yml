@@ -1,34 +1,43 @@
-- name: Deploy Static HTML App
+- name: Deploy Static HTML Time App
   hosts: web
   become: yes
 
   tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
     - name: Install NGINX
       apt:
         name: nginx
         state: present
-        update_cache: yes
-    
-    - name: Start and enable nginx
+
+    - name: Ensure NGINX is running
       service:
         name: nginx
         state: started
         enabled: yes
 
-    - name: Copy app files
+    - name: Remove old nginx default index.html if exists
+      file:
+        path: /var/www/html/index.nginx-debian.html
+        state: absent
+        ignore_errors: yes
+
+    - name: Copy application index.html
       copy:
         src: ../app/index.html
-        dest: /var/www/html/
-        mode: '0755'
+        dest: /var/www/html/index.html
+        mode: '0644'
 
-    - name: Update NGINX config
+    - name: Copy nginx config
       copy:
         src: ../nginx/nginx.conf
         dest: /etc/nginx/sites-available/default
         mode: '0644'
 
-    - name: Restart NGINX
+    - name: Restart NGINX after config update
       service:
         name: nginx
         state: restarted
-
