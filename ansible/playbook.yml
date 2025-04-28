@@ -8,11 +8,12 @@
         name: nginx
         state: present
         update_cache: yes
-
-    - name: Remove default nginx html
-      file:
-        path: /var/www/html/index.nginx-debian.html
-        state: absent
+    
+    - name: Start and enable nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
 
     - name: Copy app files
       copy:
