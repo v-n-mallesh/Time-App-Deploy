@@ -1,0 +1,33 @@
+- name: Deploy Static HTML App
+  hosts: web
+  become: yes
+
+  tasks:
+    - name: Install NGINX
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Remove default nginx html
+      file:
+        path: /var/www/html/index.nginx-debian.html
+        state: absent
+
+    - name: Copy app files
+      copy:
+        src: ../app/
+        dest: /var/www/html/
+        mode: '0755'
+
+    - name: Update NGINX config
+      copy:
+        src: ../nginx/nginx.conf
+        dest: /etc/nginx/sites-available/default
+        mode: '0644'
+
+    - name: Restart NGINX
+      service:
+        name: nginx
+        state: restarted
+
