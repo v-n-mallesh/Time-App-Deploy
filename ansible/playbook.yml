@@ -17,7 +17,7 @@
 
     - name: Copy app files
       copy:
-        src: ../app/
+        src: ../app/index.html
         dest: /var/www/html/
         mode: '0755'
 
